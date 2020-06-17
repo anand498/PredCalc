@@ -3,11 +3,7 @@ from scipy.spatial import distance as dist
 from imutils.video import FileVideoStream
 from imutils.video import VideoStream
 import numpy as np
-import imutils
-import cv2
-import os
-import sys
-import dlib
+import cv2,os,sys,dlib,imutils
 from PIL import Image
 from keras.models import load_model,Model
 from keras.models import Model,load_model
@@ -23,36 +19,52 @@ def mask(frame):
 		edges = cv2.Canny(frame,100,200) 
 		return edges
 def prediction_frame(croppedframe):
-    croppedframe=cv2.cvtColor(croppedframe,cv2.COLOR_GRAY2BGR)
-    croppedframe=cv2.resize(croppedframe,(28,28))
+    # croppedframe=cv2.cvtColor(croppedframe,cv2.COLOR_GRAY2BGR)
+    croppedframe=cv2.resize(croppedframe,(128,128))
     croppedframe = np.expand_dims(croppedframe, axis=0)
-    croppedframe.reshape([1,28,28,3])
-    croppedframe = croppedframe.astype('float32')
-    croppedframe = croppedframe / 255.0
-    return cropped frame
+    croppedframe.reshape([1,128,128,3]).astype('float32')/255.0
+    # croppedframe = croppedframe.astype('float32')
+    # croppedframe = croppedframe / 255.0
+    return croppedframe
 
 def predictframe():
     FONT_HERSHEY_COMPLEX = 3
     video_capture = cv2.VideoCapture(0)
     framerate = video_capture.get(cv2.CAP_PROP_FPS)
+    framecount=0
     while(True):
-        if cv2.waitKey(100) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break 
         ret,frame = video_capture.read()
         frame1=frame
-        leftframe=frame[100:300,0:200]
-        rightframe=frame[100:300,500;700]
-        cv2.rectangle(frame, (0, 100),(200, 300), (255, 0, 0), 2)
-        cv2.rectangle(frame,(500,100),(700,300),(255,0,0),2)
-        leftframe=mask(leftframe)
-        righ
-        cv2.imshow('Masked',croppedframe)
-        a=np.argmax(model.predict(croppedframe))+1
-        result=labels.get(str(a))
-        cv2.putText(frame1,str(result), (10, 100),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+        leftframe=frame[100:300,50:250]
+        rightframe=frame[100:300,400:600]
+        
+        cv2.rectangle(frame, (50, 100),(250, 300), (255, 0, 0), 2)
+        cv2.rectangle(frame,(400,100),(600,300),(255,0,0),2)
+        cv2.imshow('frame',rightframe)
+
+        # leftframe=mask(leftframe)
+        # rightframe=mask(rightframe)
+        # cv2.imshow('Left Frame',leftframe)
+        # cv2.resizeWindow('Left Frame', 256, 256)
+        # cv2.imshow('Right Frame',rightframe)
+        # cv2.resizeWindow('Right Frame', 300, 300)
+        leftframe=prediction_frame(leftframe)
+        rightframe=prediction_frame(rightframe)
+        # if(framecount%(15)==0): # prediction after every 15 frames
+        leftdigit=np.argmax(model.predict(leftframe))+1
+        rightdigit=np.argmax(model.predict(rightframe))+1
+        print(rightdigit)
+        left_result=labels.get(str(leftdigit))
+        right_result=labels.get(str(rightdigit))
+        cv2.putText(frame1,str(left_result), (10, 100),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+        cv2.putText(frame1,str(right_result), (30, 100),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+    
         cv2.imshow('Frame',frame1)
+        framecount+=1
 if __name__ == '__main__':
-	model=load_model('C:/Users/anand/Desktop/firstfmodel.h5')
-    labels={'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':'minus','11':'multiply','12':'addition','13':'fist','14':'palm'}
-	predictframe()
+    model=load_model('C:/Users/anand/Desktop/firstfmodel.h5')
+    labels={'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9}
+    predictframe()
 	
