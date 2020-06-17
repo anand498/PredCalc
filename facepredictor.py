@@ -36,14 +36,13 @@ def captureframe():
 		ret,frame = video_capture.read()
 		framecount+=1
 		# cv2.imshow("Frame",frame)
-		cv2.rectangle(frame, (0, 100),(300, 300), (255, 0, 0), 2)
-		cv2.imshow('edges',frame)
-		cv2.putText(frame,'Captured', (10, 100),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-		if(framecount%(framerate/3)==0 and digitcount!=40):
-				print('Captured'+str(digitcount))
+		cv2.rectangle(frame, (5, 95),(215, 310), (255, 0, 0), 1)
+		cv2.imshow('Frame',frame)
+		if(framecount%(framerate/3)==0 and digitcount!=60):
+				print('Captured :'+str(digitcount))
 				digitcount+=1
-				cv2.imwrite('C:/Users/anand/Desktop/1_%d.png'%np.random.randint(1,40000),frame[100:300,0:300])
-				if (digitcount==40):
+				cv2.imwrite('C:/Users/anand/Desktop/data/09_%d.png'%np.random.randint(1,40000),frame[100:300,10:210])
+				if (digitcount==60):
     					break
 if __name__ == '__main__':
 	captureframe()
