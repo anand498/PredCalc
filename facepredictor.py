@@ -1,49 +1,50 @@
-from keras.preprocessing.image import img_to_array
-from scipy.spatial import distance as dist
-from imutils.video import FileVideoStream
-from imutils.video import VideoStream
 import numpy as np
 import imutils
 import cv2
 import os
 import sys
 import dlib
-from PIL import Image
 from keras.models import load_model,Model
-from keras.models import Model,load_model
 from keras.preprocessing.image import img_to_array
-import numpy as np # linear algebra
+
 
 def mask(frame):
-		lower_red = np.array([30,150,50]) 
-		upper_red = np.array([255,255,180]) 
-		hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-		mask = cv2.inRange(hsv, lower_red, upper_red) 
-		res = cv2.bitwise_and(frame,frame, mask= mask) 
-		edges = cv2.Canny(frame,100,200) 
-		return edges
-    	
+		sigma=0.5
+		gray_image=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+		v = np.median(gray_image)
+		lower = int(max(0, (1.0 - sigma) * v))
+		upper = int(min(255, (1.0 + sigma) * v))
+		edged = cv2.Canny(gray_image, lower, upper)
+		return edged
 def captureframe():
-    	
 	video_capture = cv2.VideoCapture(0)
 	framerate = video_capture.get(cv2.CAP_PROP_FPS)
 	print(framerate)
 	framecount = 0
+	flagforprediction = False
 	digitcount=0
 	while(True):
-		if cv2.waitKey(1) & 0xFF == ord('q'):
+		keypress= cv2.waitKey(1)
+		if  keypress == ord('q'):
 					break 
+		if  keypress ==  ord('c'):
+    			flagforprediction = True		
 		ret,frame = video_capture.read()
+		frame1=frame
 		framecount+=1
-		# cv2.imshow("Frame",frame)
-		cv2.rectangle(frame, (5, 95),(215, 310), (255, 0, 0), 1)
-		cv2.imshow('Frame',frame)
-		if(framecount%(framerate/3)==0 and digitcount!=60):
-				print('Captured :'+str(digitcount))
-				digitcount+=1
-				cv2.imwrite('C:/Users/anand/Desktop/data/09_%d.png'%np.random.randint(1,40000),frame[100:300,10:210])
-				if (digitcount==60):
-    					break
+		totalframes=200
+		cv2.imshow('Masked',mask(frame1))
+		cv2.rectangle(frame, (23, 113),(237, 352), (255, 0, 0), 1)
+		if flagforprediction==True:
+				if(framecount%3==0 and digitcount!=totalframes):
+						print('Captured : '+str(digitcount))
+						digitcount+=1
+						cv2.putText(frame,'Capturing', (300, 100),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+						# cv2.imwrite('C:/Users/anand/Desktop/Data/9-%d.png'%np.random.randint(1,40000),mask(frame[115:350,25:235]))
+						if (digitcount==totalframes):
+							flagforprediction= False
+		cv2.imshow('Actual Frame',frame)
+		cv2.imshow('Masked frame',mask(frame))		
 if __name__ == '__main__':
 	captureframe()
 	
