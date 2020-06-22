@@ -1,7 +1,6 @@
 import numpy as np
-import cv2,os,sys,imutils
+import cv2
 from keras.models import load_model,Model
-from keras.preprocessing.image import img_to_array
  
 
 def prediction_frame(model,frame):
@@ -17,35 +16,34 @@ def binmask(frame):
         thresh_gray = cv2.morphologyEx(thresh_gray, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3)))
         thresh_gray = cv2.morphologyEx(thresh_gray, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7,7)))
         return thresh_gray
-def get_operator(digit):
-    operator=""
-    if digit=='5':
-        operator='+'
-    elif digit=='2':
-        operator='-'
-    elif digit=='3':
-        operator='*'
-    elif digit=='4':
-        operator='/'
-    return operator
 def calc(a):
+    op=['+','-','*','/']
+    operand=''
     for i in range(len(a)):
-        if(a[i]=='+'):
+        if(a[i] in op ):
             value1=int(a[0:i])
             value2=int(a[i+1:len(a)-1])
+            operand=a[i]
+         
         elif (a[i]=='='):
-            sum = value1+value2
-    return str(sum)         
+            if(operand=='+'):
+                result = value1+value2
+            elif (operand=='-'):
+                result=value1-value2
+            elif (operand=='*'):
+                result=value1*value2        
+    return str(result)
 def hand_calc():
     framecount=0
-    dig_pred=(False,False)
+    dig_pred=False
     text=""
     oldtext=""
     digit=""
     sametext=0
-    operator=""
+    equal=True
+    totalframecheck=40
     while(True):
-        display = np.zeros((480, 480, 3), dtype=np.uint8)
+        display = np.zeros((480, 600, 3), dtype=np.uint8)
         keypressed = cv2.waitKey(1)
         if keypressed == ord('q'): # to exit
             break 
@@ -55,7 +53,6 @@ def hand_calc():
             dig_pred=False
         if keypressed == ord('o'):
             cv2.destroyWindow('Cropped Frame')
-
         ret,frame = video_capture.read()
         digitframe=frame[113:263,23:173]
         digitframe=binmask(digitframe)
@@ -69,16 +66,21 @@ def hand_calc():
                 sametext+=1 
             else:
                 sametext=0
-        if sametext==20 and digit=='7':
-            cv2.putText(display,"Clear Screen",(10, 90),font,fontsize,green,thickness)
-            text=''
-            sametext=0
-        if sametext==20:
-            text+=digit
-            sametext=0
+            if sametext==totalframecheck and digit=='0':
+                text=''
+                sametext=0
+            if sametext==totalframecheck:
+                if(digit!='13'):
+                    text+=labels.get(digit)
+                    sametext=0
+                if digit=='13':
+                    text+='='
+                    text+=calc(text)
+                    sametext=0
+        
         framecount+=1
-        cv2.putText(display,"Digit: "+ str(digit), (100, 40),font,fontsize,red,thickness) 
-        cv2.putText(display,"Operator: "+str(operator), (100, 60),font,fontsize,red,thickness)
+        cv2.putText(display,"Equation: "+ text, (10, 150),font,fontsize+.6,green,thickness) 
+        cv2.putText(display,"Predicted Value: "+str(labels.get(digit)), (10, 80),font,fontsize,red,thickness)
         frame=np.hstack((frame,display))
         cv2.imshow('frame',frame)
         
@@ -89,7 +91,8 @@ if __name__ == '__main__':
     fontsize=0.6
     text=""
     maskmodel=load_model('C:/Users/anand/Downloads/maskmodelv1.h5')
-    labels={'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'add','11':'sub','12':'divide','13':'multiply'}
+    # '0':'','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'add','11':'sub','12':'multiply','13':'divide'
+    labels={'0':'Empty','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'+','11':'-','12':'*','13':'='}
     video_capture = cv2.VideoCapture(0)
     hand_calc()
 	
