@@ -31,8 +31,7 @@ def hand_calc():
             dig_pred=True
         if keypressed == ord('x'): # to close the masked frame
             dig_pred=False
-        if keypressed == ord('o'):
-            cv2.destroyWindow('Cropped Frame')
+
         ret,frame = video_capture.read()
         digitframe=frame[113:263,23:173] #cropped frame
         digitframe=binmask(digitframe)
@@ -67,7 +66,7 @@ def hand_calc():
 if __name__ == '__main__':
     (red,green,blue)=((0,0,255),(0,255,0),(255,0,0))
     font,thickness,fontsize=(cv2.FONT_HERSHEY_TRIPLEX,1,0.6)
-    maskmodel=load_model('models/maskmodelv1.h5')
+    maskmodel=load_model('maskmodelv1.h5')
     labels={'0':'Empty','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'+','11':'-','12':'*','13':'='}
     video_capture = cv2.VideoCapture(0)
     hand_calc()
