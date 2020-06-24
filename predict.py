@@ -20,9 +20,6 @@ def hand_calc():
     framecount=0
     dig_pred=False
     text,oldtext,digit=('','','')
-    # text=""
-    # oldtext=""
-    # digit=""
     sametext=0
     totalframecheck=40
     while(True):
@@ -70,11 +67,7 @@ def hand_calc():
 if __name__ == '__main__':
     (red,green,blue)=((0,0,255),(0,255,0),(255,0,0))
     font,thickness,fontsize=(cv2.FONT_HERSHEY_TRIPLEX,1,0.6)
-    # font=cv2.FONT_HERSHEY_TRIPLEX
-    # thickness=1
-    # fontsize=0.6
-    maskmodel=load_model('C:/Users/anand/Downloads/maskmodelv1.h5')
-    # '0':'','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'add','11':'sub','12':'multiply','13':'divide'
+    maskmodel=load_model('models/maskmodelv1.h5')
     labels={'0':'Empty','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'+','11':'-','12':'*','13':'='}
     video_capture = cv2.VideoCapture(0)
     hand_calc()
