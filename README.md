@@ -1,7 +1,7 @@
 # PredCalc
 An application that performs calculations based on the gestures. With the help of Deep learning and Computer Vision, the system 
 identifies the gesture signal and predict the combined expression intended.The system detects hand gestures and perfrom the calculations accordingly.<br />
-The labels are '0'-for clear screen ,1-9 - American Sign Language,10-addition,11-subtraction,12-multiply,13-division,14-get the result of expression.
+The labels are '0'-for clear screen ,1-9 - American Sign Language,10-addition,11-subtraction,12-multiply,13-division,14-get the result of expression. To further inderstand the labels I have used, go to the `labels` folder.
 
 
 ## File Specifications
