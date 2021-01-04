@@ -31,6 +31,9 @@ Download the model from this [link](https://drive.google.com/file/d/1EdlSt_bHTxw
 `python gesture-training.py` <br/>
 The outcome of the file would be a model (.h5) to predict the new gestures made by the user for performing the calculations in run-time.
 
+### Here's the Drive link to the pre-trained model
+https://drive.google.com/file/d/1R1CSScF4EdaDnyhBJC2wpZTM9lZVmpEg/view?usp=sharing
+
 ### Predicting the gestures in real-time
 `python predict.py` <br />
 After you esecture the command place your hand in the region inside the blue window and press the 'c' key once. The model will start predicting the gestures in that particular frame window. Now to confirm the prediction you have to maintain the same frame for atleast 40 frames. After that the value gets appended into the expression. Once you have correctly formed the expression tehe pointing out your little finger(label 14) the result of this expression gets appended into the expression. To clear the screen, show a pumped fist(label 0)
